@@ -1,4 +1,5 @@
 import React from 'react';
+import AppLayout from '../components/AppLayout';
 import ParkingSlotForm from '../components/ParkingSlotForm';
 import ParkingSlotList from '../components/ParkingSlotList';
 import BookingForm from '../components/BookingForm';
@@ -6,33 +7,50 @@ import BookingList from '../components/BookingList';
 
 const Parking = () => {
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Parking Slot Booking Dashboard</h1>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Add Parking Slot</h2>
-          <ParkingSlotForm />
+    <AppLayout>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Book a Parking Spot</h2>
+          <p className="text-gray-600">
+            Manage parking slots and create bookings from one dashboard.
+          </p>
         </div>
 
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Create Booking</h2>
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Search and Create Booking</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Select an available parking slot and confirm a booking.
+          </p>
           <BookingForm />
         </div>
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 mt-6">
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Parking Slots</h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Add Parking Slot</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Create a new parking space for users to reserve.
+            </p>
+            <ParkingSlotForm />
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">My Bookings</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              View active and previous parking reservations.
+            </p>
+            <BookingList />
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Available Parking Slots</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Review all parking spaces currently stored in the system.
+          </p>
           <ParkingSlotList />
         </div>
-
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Bookings</h2>
-          <BookingList />
-        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

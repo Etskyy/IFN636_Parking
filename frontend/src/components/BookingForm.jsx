@@ -16,8 +16,7 @@ const BookingForm = () => {
     const fetchSlots = async () => {
       try {
         const { data } = await axios.get('/parking-slots');
-        const availableSlots = data.filter((slot) => slot.availability);
-        setSlots(availableSlots);
+        setSlots(data.filter((slot) => slot.availability));
       } catch (err) {
         setError('Failed to load parking slots');
       }
@@ -54,57 +53,79 @@ const BookingForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      {message && <p className="text-green-600">{message}</p>}
-      {error && <p className="text-red-500">{error}</p>}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {message && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
 
-      <select
-        name="slotId"
-        value={formData.slotId}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      >
-        <option value="">Select Parking Slot</option>
-        {slots.map((slot) => (
-          <option key={slot._id} value={slot._id}>
-            {slot.slotNumber} - {slot.location}
-          </option>
-        ))}
-      </select>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Parking Slot</label>
+        <select
+          name="slotId"
+          value={formData.slotId}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        >
+          <option value="">Select Parking Slot</option>
+          {slots.map((slot) => (
+            <option key={slot._id} value={slot._id}>
+              {slot.slotNumber} - {slot.location}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <input
-        type="date"
-        name="bookingDate"
-        value={formData.bookingDate}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+      <div className="grid md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+          <input
+            type="date"
+            name="bookingDate"
+            value={formData.bookingDate}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-      <input
-        type="time"
-        name="startTime"
-        value={formData.startTime}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+          <input
+            type="time"
+            name="startTime"
+            value={formData.startTime}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
 
-      <input
-        type="time"
-        name="endTime"
-        value={formData.endTime}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-        required
-      />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+          <input
+            type="time"
+            name="endTime"
+            value={formData.endTime}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+      </div>
 
       <button
         type="submit"
-        className="bg-green-600 text-white px-4 py-2 rounded"
+        className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition"
       >
-        Create Booking
+        Search and Book Spot
       </button>
     </form>
   );

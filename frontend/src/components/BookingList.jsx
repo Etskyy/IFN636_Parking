@@ -19,36 +19,57 @@ const BookingList = () => {
     fetchBookings();
   }, []);
 
-  return (
-    <div>
-      {error && <p className="text-red-500 mb-3">{error}</p>}
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
-      {bookings.length === 0 ? (
-        <p>No bookings found.</p>
-      ) : (
-        <div className="space-y-3">
-          {bookings.map((booking) => (
-            <div key={booking._id} className="border rounded p-3">
-              <p>
-                <strong>Slot:</strong>{' '}
+  if (bookings.length === 0) {
+    return <p className="text-gray-500">No bookings found.</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {bookings.map((booking) => (
+        <div key={booking._id} className="border border-gray-200 rounded-xl p-4 bg-gray-50">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div>
+              <p className="font-semibold text-gray-900">
                 {booking.slotId?.slotNumber || 'N/A'}
               </p>
-              <p>
-                <strong>Location:</strong>{' '}
-                {booking.slotId?.location || 'N/A'}
-              </p>
-              <p><strong>Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</p>
-              <p><strong>Start:</strong> {booking.startTime}</p>
-              <p><strong>End:</strong> {booking.endTime}</p>
-              <p><strong>Status:</strong> {booking.status}</p>
-              <p>
-                <strong>User:</strong>{' '}
-                {booking.userId?.name || 'N/A'}
+              <p className="text-sm text-gray-500">
+                {booking.slotId?.location || 'Unknown location'}
               </p>
             </div>
-          ))}
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                booking.status === 'active'
+                  ? 'bg-green-100 text-green-700'
+                  : booking.status === 'cancelled'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              {booking.status}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+            <p>
+              <span className="font-medium">Date:</span>{' '}
+              {new Date(booking.bookingDate).toLocaleDateString()}
+            </p>
+            <p>
+              <span className="font-medium">User:</span> {booking.userId?.name || 'N/A'}
+            </p>
+            <p>
+              <span className="font-medium">Start:</span> {booking.startTime}
+            </p>
+            <p>
+              <span className="font-medium">End:</span> {booking.endTime}
+            </p>
+          </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };
