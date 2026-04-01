@@ -40,4 +40,4 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
-        run: npm run build
+        run: node ./node_modules/react-scripts/bin/react-scripts.js build
