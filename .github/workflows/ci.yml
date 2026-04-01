@@ -1,28 +1,40 @@
 name: CI
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  test-and-build:
+    runs-on: ubuntu-latest
 
-        steps:
-        - name: Checkout code
-            uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Set up Node.js
-            uses: actions/setup-node@v2
-            with:
-                node-version: '14'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-        - name: Install dependencies
-            run: npm install
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
 
-        - name: Run tests
-            run: npm test
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
