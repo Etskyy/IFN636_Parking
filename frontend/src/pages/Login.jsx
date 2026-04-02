@@ -19,10 +19,17 @@ const Login = () => {
 
     try {
       const { data } = await axios.post('/auth/login', formData);
+
       localStorage.setItem('userInfo', JSON.stringify(data));
       localStorage.setItem('token', data.token);
+
       setError('');
-      navigate('/parking');
+
+      if (data.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/parking');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }

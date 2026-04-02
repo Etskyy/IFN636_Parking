@@ -6,6 +6,7 @@ const AppLayout = ({ children }) => {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('userInfo') || 'null');
+  const isAdmin = user?.role === 'admin';
 
   const handleLogout = () => {
     localStorage.removeItem('userInfo');
@@ -16,6 +17,7 @@ const AppLayout = ({ children }) => {
   const navItems = [
     { path: '/parking', label: 'Book Parking' },
     { path: '/profile', label: 'Profile' },
+    ...(isAdmin ? [{ path: '/admin', label: 'Admin Panel' }] : []),
   ];
 
   return (
@@ -37,6 +39,11 @@ const AppLayout = ({ children }) => {
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
               Welcome, <span className="font-medium text-gray-900">{user?.name || 'User'}</span>
+              {isAdmin && (
+                <span className="ml-2 inline-block px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                  Admin
+                </span>
+              )}
             </span>
             <button
               onClick={handleLogout}

@@ -6,17 +6,19 @@ const {
   updateParkingSlot,
   deleteParkingSlot,
 } = require('../controllers/parkingSlotController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.route('/')
+router
+  .route('/')
   .get(getParkingSlots)
-  .post(protect, createParkingSlot);
+  .post(protect, adminOnly, createParkingSlot);
 
-router.route('/:id')
+router
+  .route('/:id')
   .get(getParkingSlotById)
-  .put(protect, updateParkingSlot)
-  .delete(protect, deleteParkingSlot);
+  .put(protect, adminOnly, updateParkingSlot)
+  .delete(protect, adminOnly, deleteParkingSlot);
 
 module.exports = router;

@@ -4,16 +4,23 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Parking from './pages/Parking';
+import Admin from './pages/Admin';
 
 const App = () => {
+  const user = JSON.parse(localStorage.getItem('userInfo') || 'null');
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to={user ? '/parking' : '/login'} replace />}
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/parking" element={<Parking />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );
