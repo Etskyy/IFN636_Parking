@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout';
 import ParkingSlotForm from '../components/ParkingSlotForm';
 import ParkingSlotList from '../components/ParkingSlotList';
 import BookingList from '../components/BookingList';
+import UserManagement from '../components/UserManagement';
 
 const Admin = () => {
   const user = JSON.parse(localStorage.getItem('userInfo') || 'null');
@@ -22,34 +23,42 @@ const Admin = () => {
         <div>
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Admin Dashboard</h2>
           <p className="text-gray-600">
-            Manage parking slots and review bookings across the system.
+            Manage users, parking slots, and bookings across the system.
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">Add Parking Slot</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Add Parking Spot</h3>
             <p className="text-sm text-gray-500 mb-4">
-              Create new parking spaces for users to reserve.
+              Create a new parking spot for users to reserve.
             </p>
             <ParkingSlotForm />
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">All Bookings</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Bookings</h3>
             <p className="text-sm text-gray-500 mb-4">
-              View all reservations made through the application.
+              Review all reservations made in the system.
             </p>
             <BookingList />
           </div>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">All Parking Slots</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">All Parking Spots</h3>
           <p className="text-sm text-gray-500 mb-4">
-            Review all parking slots in the system.
+            View every parking spot currently stored in the system.
           </p>
           <ParkingSlotList />
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">User Management</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Edit users, change roles, update emails, or remove accounts.
+          </p>
+          <UserManagement />
         </div>
       </div>
     </AppLayout>
