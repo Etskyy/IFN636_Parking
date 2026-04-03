@@ -31,6 +31,22 @@ const BookingList = ({ splitByTime = false }) => {
     fetchBookings();
   }, []);
 
+  const bookingEndDateTime = (booking) => {
+    const date = new Date(booking.bookingDate);
+    const [endHour = '0', endMinute = '0'] = (booking.endTime || '00:00').split(':');
+    date.setHours(Number(endHour), Number(endMinute), 0, 0);
+    return date;
+  };
+
+  const isPastBooking = (booking) => {
+    if (booking.status === 'cancelled' || booking.status === 'completed') return true;
+    return bookingEndDateTime(booking) < new Date();
+  };
+
+  const canEditOrCancel = (booking) => {
+    return !isPastBooking(booking) && booking.status === 'active';
+  };
+
   const startEdit = (booking) => {
     const bookingDateValue = booking.bookingDate
       ? new Date(booking.bookingDate).toISOString().split('T')[0]
@@ -79,9 +95,23 @@ const BookingList = ({ splitByTime = false }) => {
     }
   };
 
-  const handleDelete = async (bookingId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this booking?');
+  const handleCancelBooking = async (bookingId) => {
+    const confirmCancel = window.confirm('Are you sure you want to cancel this booking?');
+    if (!confirmCancel) return;
 
+    try {
+      await axios.put(`/bookings/${bookingId}/cancel`);
+      setMessage('Booking cancelled successfully');
+      setError('');
+      fetchBookings();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to cancel booking');
+      setMessage('');
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this booking?');
     if (!confirmDelete) return;
 
     try {
@@ -104,18 +134,11 @@ const BookingList = ({ splitByTime = false }) => {
   }, [bookings]);
 
   const { presentBookings, pastBookings } = useMemo(() => {
-    const now = new Date();
-
     const present = [];
     const past = [];
 
     sortedBookings.forEach((booking) => {
-      const bookingDate = new Date(booking.bookingDate);
-      const [endHour = '0', endMinute = '0'] = (booking.endTime || '00:00').split(':');
-      const bookingEnd = new Date(bookingDate);
-      bookingEnd.setHours(Number(endHour), Number(endMinute), 0, 0);
-
-      if (booking.status === 'cancelled' || bookingEnd < now) {
+      if (isPastBooking(booking)) {
         past.push(booking);
       } else {
         present.push(booking);
@@ -127,6 +150,7 @@ const BookingList = ({ splitByTime = false }) => {
 
   const renderBookingCard = (booking) => {
     const isEditing = editingBookingId === booking._id;
+    const editable = canEditOrCancel(booking);
 
     if (isEditing) {
       return (
@@ -161,6 +185,7 @@ const BookingList = ({ splitByTime = false }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
               <input
                 type="time"
+                step="1800"
                 name="startTime"
                 value={editForm.startTime}
                 onChange={handleEditChange}
@@ -172,6 +197,7 @@ const BookingList = ({ splitByTime = false }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
               <input
                 type="time"
+                step="1800"
                 name="endTime"
                 value={editForm.endTime}
                 onChange={handleEditChange}
@@ -179,19 +205,21 @@ const BookingList = ({ splitByTime = false }) => {
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                name="status"
-                value={editForm.status}
-                onChange={handleEditChange}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              >
-                <option value="active">active</option>
-                <option value="completed">completed</option>
-                <option value="cancelled">cancelled</option>
-              </select>
-            </div>
+            {isAdmin && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  name="status"
+                  value={editForm.status}
+                  onChange={handleEditChange}
+                  className="w-full border border-gray-300 p-2 rounded-lg"
+                >
+                  <option value="active">active</option>
+                  <option value="completed">completed</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
@@ -258,22 +286,33 @@ const BookingList = ({ splitByTime = false }) => {
           </p>
         </div>
 
-        {isAdmin && (
-          <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-4">
+          {editable && (
+            <>
+              <button
+                onClick={() => startEdit(booking)}
+                className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleCancelBooking(booking._id)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+              >
+                Cancel Booking
+              </button>
+            </>
+          )}
+
+          {isAdmin && (
             <button
-              onClick={() => startEdit(booking)}
-              className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDelete(booking._id)}
+              onClick={() => handleDeleteBooking(booking._id)}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
             >
               Delete
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   };
