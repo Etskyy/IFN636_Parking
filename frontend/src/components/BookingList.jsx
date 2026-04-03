@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from '../axiosConfig';
 
-const BookingList = ({ splitByTime = false }) => {
+const BookingList = ({ splitByTime = false, scope = 'mine' }) => {
   const [bookings, setBookings] = useState([]);
   const [editingBookingId, setEditingBookingId] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -17,9 +17,23 @@ const BookingList = ({ splitByTime = false }) => {
   const currentUser = JSON.parse(localStorage.getItem('userInfo') || 'null');
   const isAdmin = currentUser?.role === 'admin';
 
+  const timeOptions = useMemo(() => {
+    const options = [];
+
+    for (let hour = 0; hour < 24; hour++) {
+      for (const minute of [0, 30]) {
+        const hh = String(hour).padStart(2, '0');
+        const mm = String(minute).padStart(2, '0');
+        options.push(`${hh}:${mm}`);
+      }
+    }
+
+    return options;
+  }, []);
+
   const fetchBookings = async () => {
     try {
-      const { data } = await axios.get('/bookings');
+      const { data } = await axios.get(`/bookings?scope=${scope}`);
       setBookings(data);
       setError('');
     } catch (err) {
@@ -29,7 +43,7 @@ const BookingList = ({ splitByTime = false }) => {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [scope]);
 
   const bookingEndDateTime = (booking) => {
     const date = new Date(booking.bookingDate);
@@ -81,6 +95,11 @@ const BookingList = ({ splitByTime = false }) => {
       [e.target.name]: e.target.value,
     }));
   };
+
+  const availableEndTimes = useMemo(() => {
+    if (!editForm.startTime) return timeOptions;
+    return timeOptions.filter((time) => time > editForm.startTime);
+  }, [editForm.startTime, timeOptions]);
 
   const handleUpdate = async (bookingId) => {
     try {
@@ -183,29 +202,39 @@ const BookingList = ({ splitByTime = false }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-              <input
-                type="time"
-                step="1800"
+              <select
                 name="startTime"
                 value={editForm.startTime}
                 onChange={handleEditChange}
                 className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+              >
+                <option value="">Select Start Time</option>
+                {timeOptions.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-              <input
-                type="time"
-                step="1800"
+              <select
                 name="endTime"
                 value={editForm.endTime}
                 onChange={handleEditChange}
                 className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+              >
+                <option value="">Select End Time</option>
+                {availableEndTimes.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {isAdmin && (
+            {isAdmin && scope === 'all' && (
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
@@ -304,7 +333,7 @@ const BookingList = ({ splitByTime = false }) => {
             </>
           )}
 
-          {isAdmin && (
+          {isAdmin && scope === 'all' && (
             <button
               onClick={() => handleDeleteBooking(booking._id)}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"

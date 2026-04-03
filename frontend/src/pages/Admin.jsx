@@ -23,7 +23,7 @@ const Admin = () => {
         <div>
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Admin Dashboard</h2>
           <p className="text-gray-600">
-            Manage users, parking slots, and bookings across the system.
+            Manage users, parking spots, and bookings across the system.
           </p>
         </div>
 
@@ -41,7 +41,7 @@ const Admin = () => {
             <p className="text-sm text-gray-500 mb-4">
               Review all reservations made in the system.
             </p>
-            <BookingList />
+            <BookingList scope="all" />
           </div>
         </div>
 

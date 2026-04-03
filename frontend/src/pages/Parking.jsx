@@ -18,7 +18,7 @@ const Parking = () => {
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Create Booking</h3>
           <p className="text-sm text-gray-500 mb-4">
-            Select an available parking slot, enter your license plate, and reserve it.
+            Select an available parking spot, enter your license plate, and reserve it.
           </p>
           <BookingForm />
         </div>
@@ -28,7 +28,7 @@ const Parking = () => {
           <p className="text-sm text-gray-500 mb-4">
             View your bookings separated into current and past reservations.
           </p>
-          <BookingList splitByTime={true} />
+          <BookingList splitByTime={true} scope="mine" />
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">

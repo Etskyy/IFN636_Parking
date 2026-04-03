@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from '../axiosConfig';
 
 const BookingForm = () => {
@@ -13,13 +13,29 @@ const BookingForm = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const timeOptions = useMemo(() => {
+    const options = [];
+
+    for (let hour = 0; hour < 24; hour++) {
+      for (const minute of [0, 30]) {
+        const hh = String(hour).padStart(2, '0');
+        const mm = String(minute).padStart(2, '0');
+        options.push(`${hh}:${mm}`);
+      }
+    }
+
+    return options;
+  }, []);
+
   useEffect(() => {
     const fetchSlots = async () => {
       try {
         const { data } = await axios.get('/parking-slots');
+        // only show spots that admins have not disabled
         setSlots(data.filter((slot) => slot.availability));
+        setError('');
       } catch (err) {
-        setError('Failed to load parking slots');
+        setError('Failed to load parking spots');
       }
     };
 
@@ -28,14 +44,40 @@ const BookingForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value,
+      };
+
+      if (name === 'startTime' && updated.endTime && updated.endTime <= value) {
+        updated.endTime = '';
+      }
+
+      return updated;
+    });
   };
+
+  const availableEndTimes = useMemo(() => {
+    if (!formData.startTime) return timeOptions;
+    return timeOptions.filter((time) => time > formData.startTime);
+  }, [formData.startTime, timeOptions]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.startTime || !formData.endTime) {
+      setError('Please select both a start time and end time');
+      setMessage('');
+      return;
+    }
+
+    if (formData.endTime <= formData.startTime) {
+      setError('End time must be after start time');
+      setMessage('');
+      return;
+    }
 
     try {
       await axios.post('/bookings', formData);
@@ -68,7 +110,7 @@ const BookingForm = () => {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Parking Slot</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Parking Spot</label>
         <select
           name="slotId"
           value={formData.slotId}
@@ -76,7 +118,7 @@ const BookingForm = () => {
           className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         >
-          <option value="">Select Parking Slot</option>
+          <option value="">Select Parking Spot</option>
           {slots.map((slot) => (
             <option key={slot._id} value={slot._id}>
               {slot.slotNumber} - {slot.location}
@@ -98,41 +140,55 @@ const BookingForm = () => {
         />
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-          <input
-            type="date"
-            name="bookingDate"
-            value={formData.bookingDate}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Booking Date</label>
+        <input
+          type="date"
+          name="bookingDate"
+          value={formData.bookingDate}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
 
+      <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-          <input
-            type="time"
+          <select
             name="startTime"
             value={formData.startTime}
             onChange={handleChange}
             className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          />
+          >
+            <option value="">Select Start Time</option>
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">30-minute intervals only</p>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-          <input
-            type="time"
+          <select
             name="endTime"
             value={formData.endTime}
             onChange={handleChange}
             className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          />
+          >
+            <option value="">Select End Time</option>
+            {availableEndTimes.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Choose any duration in 30-minute blocks</p>
         </div>
       </div>
 

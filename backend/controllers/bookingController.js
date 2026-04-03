@@ -102,8 +102,9 @@ const createBooking = async (req, res) => {
       return res.status(404).json({ message: 'Parking slot not found' });
     }
 
+    // availability now means "enabled/disabled by admin", not "currently booked forever"
     if (!parkingSlot.availability) {
-      return res.status(400).json({ message: 'Parking spot is disabled' });
+      return res.status(400).json({ message: 'Parking spot is currently disabled' });
     }
 
     const overlappingBooking = await findOverlappingBooking({
@@ -140,9 +141,17 @@ const createBooking = async (req, res) => {
 };
 
 // Get bookings
+// query ?scope=mine forces only current user's bookings
+// query ?scope=all lets admins view all bookings
 const getBookings = async (req, res) => {
   try {
-    const query = req.user.role === 'admin' ? {} : { userId: req.user._id };
+    const scope = req.query.scope || '';
+
+    let query = { userId: req.user._id };
+
+    if (scope === 'all' && req.user.role === 'admin') {
+      query = {};
+    }
 
     await normalizePastStatuses(query);
 

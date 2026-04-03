@@ -23,7 +23,7 @@ const ParkingSlotList = () => {
       setSlots(data);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load parking slots');
+      setError(err.response?.data?.message || 'Failed to load parking spots');
     }
   };
 
@@ -78,7 +78,6 @@ const ParkingSlotList = () => {
 
   const handleDelete = async (slotId) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this parking spot?');
-
     if (!confirmDelete) return;
 
     try {
@@ -189,7 +188,7 @@ const ParkingSlotList = () => {
                     checked={editForm.availability}
                     onChange={handleEditChange}
                   />
-                  Available
+                  Enabled for bookings
                 </label>
 
                 <div className="flex gap-2">
@@ -213,11 +212,7 @@ const ParkingSlotList = () => {
           return (
             <div
               key={slot._id}
-              className={`rounded-xl border-2 p-4 transition ${
-                slot.availability
-                  ? 'border-blue-200 bg-blue-50'
-                  : 'border-gray-200 bg-gray-100'
-              }`}
+              className="rounded-xl border-2 p-4 transition border-blue-200 bg-blue-50"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -229,10 +224,10 @@ const ParkingSlotList = () => {
                   className={`px-2 py-1 rounded-full text-xs ${
                     slot.availability
                       ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
+                      : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  {slot.availability ? 'Available' : 'Booked'}
+                  {slot.availability ? 'Enabled' : 'Disabled'}
                 </span>
               </div>
 
