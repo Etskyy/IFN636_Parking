@@ -26,6 +26,12 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    licensePlate: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+    },
     status: {
       type: String,
       enum: ['active', 'completed', 'cancelled'],

@@ -8,6 +8,7 @@ const BookingForm = () => {
     bookingDate: '',
     startTime: '',
     endTime: '',
+    licensePlate: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -45,6 +46,7 @@ const BookingForm = () => {
         bookingDate: '',
         startTime: '',
         endTime: '',
+        licensePlate: '',
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create booking');
@@ -81,6 +83,19 @@ const BookingForm = () => {
             </option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
+        <input
+          type="text"
+          name="licensePlate"
+          value={formData.licensePlate}
+          onChange={handleChange}
+          placeholder="e.g. 123ABC"
+          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
@@ -125,7 +140,7 @@ const BookingForm = () => {
         type="submit"
         className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition"
       >
-        Search and Book Spot
+        Book Parking Spot
       </button>
     </form>
   );
