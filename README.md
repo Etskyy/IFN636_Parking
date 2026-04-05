@@ -1,24 +1,86 @@
+# Parking Slot Booking System
 
-**Assessment 1.2 (Total Marks **20**)**
+## Public URL
 
-Assignment: **Software requirements analysis and design (**Full-Stack CRUD Application Development with DevOps Practices**)**
+The deployed application is available at:
 
+**http://13.211.81.2**  
+*Note that the IP will change when the instance is started.*
 
----
+GitHub repository:
 
-**Objective**
-
-For this assessment, you have already been assigned a project. Your task is to develop a system that implements CRUD (Create, Read, Update, Delete) operations based on the selected project. The system should include both a user panel and an admin panel. Depending on the nature of your chosen project, you may decide how many CRUD operations are required to support the functionality of the system. You have been provided with a starter project that includes user authentication using Node.js, React.js, and MongoDB, your should extend this application based on your assigned project requirements. Ensure that the implemented features are appropriate and meaningful for your selected project. Your project should include the following:
-In this assignment you will complete the following tasks:
-
-* **Basic Version Control using GitHub**
-* **Development, CI/CD Integration for Automated Deployment**
-* **Project report**
-
- 
----
-
-**GitHub link of the starter project: **[https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
+**https://github.com/Etskyy/IFN636_Parking**
 
 ---
 
+## Setup Instructions for Local Running
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Etskyy/IFN636_Parking.git
+cd IFN636_Parking
+```
+
+### 2. Backend setup
+
+Move into the backend folder:
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file inside the `backend` folder and add:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5001
+```
+
+Start the backend:
+
+```bash
+npm start
+```
+
+If your project uses a development script such as nodemon, you can use that instead:
+
+```bash
+npm run dev
+```
+
+### 3. Frontend setup
+
+Open a new terminal and move into the frontend folder:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The frontend should run on:
+
+```text
+http://localhost:3000
+```
+
+The backend should run on:
+
+```text
+http://localhost:5001
+```
+
+---
+
+## User Access List
+
+### Normal User Account
+Email: user@example.com  
+Password: user123
+
+### Admin Account
+Email: adin@example.com 
+Password: admin123
