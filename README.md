@@ -12,6 +12,10 @@ GitHub repository:
 **https://github.com/Etskyy/IFN636_Parking**
 
 ---
+## Instructions for EC2
+
+Double check the security rules
+---
 
 ## Setup Instructions for Local Running
 
