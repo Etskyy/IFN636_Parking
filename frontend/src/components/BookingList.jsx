@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import axios from '../axiosConfig';
 
 const BookingList = ({ splitByTime = false, scope = 'mine' }) => {
@@ -31,7 +31,7 @@ const BookingList = ({ splitByTime = false, scope = 'mine' }) => {
     return options;
   }, []);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const { data } = await axios.get(`/bookings?scope=${scope}`);
       setBookings(data);
@@ -39,23 +39,23 @@ const BookingList = ({ splitByTime = false, scope = 'mine' }) => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load bookings');
     }
-  };
+  }, [scope]);
 
   useEffect(() => {
     fetchBookings();
-  }, [scope]);
+  }, [fetchBookings]);
 
-  const bookingEndDateTime = (booking) => {
+  const bookingEndDateTime = useCallback((booking) => {
     const date = new Date(booking.bookingDate);
     const [endHour = '0', endMinute = '0'] = (booking.endTime || '00:00').split(':');
     date.setHours(Number(endHour), Number(endMinute), 0, 0);
     return date;
-  };
+  }, []);
 
-  const isPastBooking = (booking) => {
+  const isPastBooking = useCallback((booking) => {
     if (booking.status === 'cancelled' || booking.status === 'completed') return true;
     return bookingEndDateTime(booking) < new Date();
-  };
+  }, [bookingEndDateTime]);
 
   const canEditOrCancel = (booking) => {
     return !isPastBooking(booking) && booking.status === 'active';
@@ -165,7 +165,7 @@ const BookingList = ({ splitByTime = false, scope = 'mine' }) => {
     });
 
     return { presentBookings: present, pastBookings: past };
-  }, [sortedBookings]);
+  }, [sortedBookings, isPastBooking]);
 
   const renderBookingCard = (booking) => {
     const isEditing = editingBookingId === booking._id;
