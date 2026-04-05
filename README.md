@@ -81,6 +81,6 @@ http://localhost:5001
 Email: user@example.com  
 Password: user123
 
-### Admin Account
-Email: adin@example.com 
+### Admin User Account
+Email: admin@example.com  
 Password: admin123
